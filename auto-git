@@ -76,7 +76,13 @@ do_amend() {
     echo "[INFO] Analyzing the last commit with Gemini..."
 
     # Extract the diff of the last commit (and any newly staged files)
-    DIFF=$(git diff --cached HEAD~1)
+    if ! git rev-parse HEAD~1 >/dev/null 2>&1; then
+        
+        DIFF=$(git show HEAD --pretty="")
+    else
+        
+        DIFF=$(git diff --cached HEAD~1 2>/dev/null || git show HEAD --pretty="")
+    fi
 
     if [ -z "$DIFF" ]; then
         echo "[INFO] No changes found to amend."
